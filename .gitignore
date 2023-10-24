@@ -1,0 +1,4 @@
+/*_files/
+*.md
+*.html
+!README.md
