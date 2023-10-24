@@ -1,7 +1,6 @@
 ---
 title: Click on map to obtain NWS weekly forecast
 echo: false
-keep-md: true
 format:
   dashboard:
     orientation: columns

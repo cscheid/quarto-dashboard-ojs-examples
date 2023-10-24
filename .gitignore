@@ -2,3 +2,4 @@
 *.md
 *.html
 !README.md
+/.quarto/
