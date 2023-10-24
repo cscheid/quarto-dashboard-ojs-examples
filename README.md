@@ -1,5 +1,8 @@
 ## Quarto OJS dashboard examples
 
+Note: Quarto dashboards are a Quarto 1.4 feature. Make sure you download the [latest pre-release versions
+of quarto](https://quarto.org/docs/download/).
+
 This repo contains examples of how to use [Quarto's dashboards](https://quarto.org/docs/dashboards/)
 with OJS cells.
 
