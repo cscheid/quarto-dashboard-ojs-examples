@@ -77,14 +77,8 @@ plot = {
 
 ## Column {width=40%}
 
-:::{.card}
-
-:::{.card-header}
-Location: ${forecast.place}
-:::
-
-:::{.card-body}
 ```{ojs}
+//| title: "Location: ${forecast.place}"
 //| output: asis
 {
     const div = html`<div></div>`;
@@ -108,6 +102,3 @@ Location: ${forecast.place}
     return div;
 }
 ```
-:::
-
-:::
