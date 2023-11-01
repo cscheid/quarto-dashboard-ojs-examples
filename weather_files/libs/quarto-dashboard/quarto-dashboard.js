@@ -56,7 +56,9 @@ window.document.addEventListener("DOMContentLoaded", function (_event) {
   }
 
   // Hook links in the body so users can link to pages
-  const linkEls = document.querySelectorAll(".quarto-dashboard-content a");
+  const linkEls = document.querySelectorAll(
+    ".quarto-dashboard-content a:not(.nav-link)"
+  );
   for (const linkEl of linkEls) {
     const linkHref = linkEl.getAttribute("href");
     linkEl.addEventListener("click", () => {
@@ -81,7 +83,14 @@ window.document.addEventListener("DOMContentLoaded", function (_event) {
 window.QuartoDashboardUtils = {
   setLocation: function (href) {
     if (history && history.pushState) {
-      history.pushState(null, null, href);
+      history.pushState({}, null, href);
+      // post "hashchange" for tools looking for it
+      if (window.parent?.postMessage) {
+        window.parent.postMessage({
+          type: "hashchange",
+          href: window.location.href,
+        }, "*");
+      }
     } else {
       window.location.replace(href);
     }
