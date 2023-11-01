@@ -14,7 +14,6 @@ proj = d3.geoAlbersUsa().fitSize([cards.map.width, cards.map.height], nation);
 statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b)
 mutable mutCent = [-108.4569010952928, 36.85687898029089];
 forecast = {
-    console.log("Here", mutCent);
     const resp = await fetch(`https://api.weather.gov/points/${mutCent[1]},${mutCent[0]}`);
     if (resp.status !== 200) {
         return {
@@ -37,7 +36,6 @@ forecast = {
                 response2Status: forecastResp.status
             }
         }
-        console.log("OK!");
         return {
             place: `${place.city}, ${place.state}`,
             periods: tbl.properties.periods,
