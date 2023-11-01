@@ -88,9 +88,7 @@ plot = {
 ```{ojs}
 {
     if (forecast.response2Status !== 200) {
-        const div = html`<div></div>`;
-        div.appendChild(html`<div>NWS did not provide forecast</div>`);
-        return div;
+        return html`<div>NWS did not provide forecast</div>`;
     }
     return Inputs.table(forecast.periods.map(period => {
         return {
