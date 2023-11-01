@@ -13,19 +13,9 @@ nation = topojson.feature(us, us.objects.nation)
 proj = d3.geoAlbersUsa().fitSize([cards.map.width, cards.map.height], nation);
 statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b)
 mutable mutCent = [-108.4569010952928, 36.85687898029089];
-centroid = Generators.observe(next => {
-    let v = [-108.4569010952928, 36.85687898029089];
-    mutable mutCent = v;
-    next(v);
-    plot.onclick = function(evt) {
-        const width = Number(plot.getAttribute("width"));
-        const height = Number(plot.getAttribute("height"));
-        const v = proj.invert([evt.offsetX, evt.offsetY]);
-        mutable mutCent = v;
-        next(v);
-    }});
 forecast = {
-    const resp = await fetch(`https://api.weather.gov/points/${centroid[1]},${centroid[0]}`);
+    console.log("Here", mutCent);
+    const resp = await fetch(`https://api.weather.gov/points/${mutCent[1]},${mutCent[0]}`);
     if (resp.status !== 200) {
         return {
             place: "Unknown",
@@ -47,6 +37,7 @@ forecast = {
                 response2Status: forecastResp.status
             }
         }
+        console.log("OK!");
         return {
             place: `${place.city}, ${place.state}`,
             periods: tbl.properties.periods,
@@ -66,23 +57,32 @@ forecast = {
 
 ```{ojs}
 //| label: map
-plot = {
-    const result = Plot.plot({
-        projection: proj,
-        length: { range: [0, 200] },
-        marks: [
-            Plot.geo(nation, { fill: "#e0e0e0" }),
-            Plot.geo(statemesh, { stroke: "white" }),
-            // Plot.geo({
-            //     "type": "Feature",
-            //     "geometry": {
-            //         "type": "Point",
-            //         "coordinates": mutCent
-            //     },
-            // }, { stroke: "red", radius: 2 })
-        ],
-    });
-    return result;
+plot = Plot.plot({
+    projection: proj,
+    length: { range: [0, 200] },
+    marks: [
+        Plot.geo(nation, { fill: "#e0e0e0" }),
+        Plot.geo(statemesh, { stroke: "white" }),
+        Plot.geo({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": mutCent
+            },
+        }, { stroke: "red", radius: 2 })
+    ],
+});
+```
+
+```{ojs}
+//| output: false
+{
+    plot.onclick = function(evt) {
+        const width = Number(plot.getAttribute("width"));
+        const height = Number(plot.getAttribute("height"));
+        const v = proj.invert([evt.offsetX, evt.offsetY]);
+        mutable mutCent = v;
+    }
 }
 ```
 
@@ -97,7 +97,6 @@ plot = {
         div.appendChild(html`<div>NWS did not provide forecast</div>`);
         return div;
     }
-
     return Inputs.table(forecast.periods.map(period => {
         return {
             time: period.name,
