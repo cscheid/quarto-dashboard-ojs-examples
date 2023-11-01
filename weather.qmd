@@ -12,12 +12,17 @@ us = FileAttachment("states-10m.json").json()
 nation = topojson.feature(us, us.objects.nation)
 proj = d3.geoAlbersUsa().fitSize([cards.map.width, cards.map.height], nation);
 statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b)
+mutable mutCent = [-108.4569010952928, 36.85687898029089];
 centroid = Generators.observe(next => {
-    next([-108.4569010952928, 36.85687898029089]);
+    let v = [-108.4569010952928, 36.85687898029089];
+    mutable mutCent = v;
+    next(v);
     plot.onclick = function(evt) {
         const width = Number(plot.getAttribute("width"));
         const height = Number(plot.getAttribute("height"));
-        next(proj.invert([evt.offsetX, evt.offsetY]));
+        const v = proj.invert([evt.offsetX, evt.offsetY]);
+        mutable mutCent = v;
+        next(v);
     }});
 forecast = {
     const resp = await fetch(`https://api.weather.gov/points/${centroid[1]},${centroid[0]}`);
@@ -68,6 +73,13 @@ plot = {
         marks: [
             Plot.geo(nation, { fill: "#e0e0e0" }),
             Plot.geo(statemesh, { stroke: "white" }),
+            // Plot.geo({
+            //     "type": "Feature",
+            //     "geometry": {
+            //         "type": "Point",
+            //         "coordinates": mutCent
+            //     },
+            // }, { stroke: "red", radius: 2 })
         ],
     });
     return result;
@@ -76,28 +88,24 @@ plot = {
 
 ## Column {width=40%}
 
+:::{.card title="Location: ${forecast.place}"}
+
 ```{ojs}
-//| title: "Location: ${forecast.place}"
-//| output: asis
 {
-    const div = html`<div></div>`;
     if (forecast.response2Status !== 200) {
+        const div = html`<div></div>`;
         div.appendChild(html`<div>NWS did not provide forecast</div>`);
         return div;
     }
-    const tbl = html`<table><thead><tr><th>when</th><th>temperature</th><th>wind</th></table>`
-    div.appendChild(tbl);
 
-    const minTemp = Math.min(...forecast.periods.map(x => x.temperature));
-    const maxTemp = Math.max(...forecast.periods.map(x => x.temperature));
-
-    for (const period of forecast.periods) {
-        const row = html`<tr></tr>`;
-        row.appendChild(html`<td>${period.name}</td>`);
-        row.appendChild(html`<td>${period.temperature}</td>`);
-        row.appendChild(html`<td>${period.windDirection} at ${period.windSpeed}</td>`);
-        tbl.appendChild(row);
-    }
-    return div;
+    return Inputs.table(forecast.periods.map(period => {
+        return {
+            time: period.name,
+            temperature: period.temperature,
+            wind: `${period.windDirection} at ${period.windSpeed}`
+        };
+    }))
 }
 ```
+
+:::
