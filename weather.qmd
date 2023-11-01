@@ -55,32 +55,29 @@ forecast = {
 
 ```{ojs}
 //| label: map
-plot = Plot.plot({
-    projection: proj,
-    length: { range: [0, 200] },
-    marks: [
-        Plot.geo(nation, { fill: "#e0e0e0" }),
-        Plot.geo(statemesh, { stroke: "white" }),
-        Plot.geo({
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": mutCent
-            },
-        }, { stroke: "red", radius: 2 })
-    ],
-});
-```
-
-```{ojs}
-//| output: false
-{
-    plot.onclick = function(evt) {
-        const width = Number(plot.getAttribute("width"));
-        const height = Number(plot.getAttribute("height"));
+plot = {
+    const result = Plot.plot({
+        projection: proj,
+        length: { range: [0, 200] },
+        marks: [
+            Plot.geo(nation, { fill: "#e0e0e0" }),
+            Plot.geo(statemesh, { stroke: "white" }),
+            Plot.geo({
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": mutCent
+                },
+            }, { stroke: "red", radius: 2 })
+        ],
+    });
+    result.onclick = function(evt) {
+        const width = Number(result.getAttribute("width"));
+        const height = Number(result.getAttribute("height"));
         const v = proj.invert([evt.offsetX, evt.offsetY]);
         mutable mutCent = v;
     }
+    return result;
 }
 ```
 
