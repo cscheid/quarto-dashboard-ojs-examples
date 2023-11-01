@@ -1,5 +1,5 @@
 ---
-title: "Mosaic + vgplot: 10M flights in linked views"
+title: "Mosaic + vgplot: 10M flights in linked views (drag a selection on the charts)"
 format: 
   dashboard:
     expandable: false # I can't figure out how to make Mosaic vgplots resizable
