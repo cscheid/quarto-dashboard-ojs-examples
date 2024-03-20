@@ -36,7 +36,7 @@ makePlot = (opts) => {
     }
 }
 vg = {
-  const vg = await import('https://cdn.jsdelivr.net/npm/@uwdata/vgplot/+esm');
+  const vg = await import('https://cdn.jsdelivr.net/npm/@uwdata/vgplot@0.4.0/+esm');
   const wasm = await vg.wasmConnector();
   vg.coordinator().databaseConnector(wasm);
   return vg;
