@@ -1,0 +1,87 @@
+---
+title: "Mosaic + vgplot: 10M flights in linked views (drag a selection on the charts)"
+format: 
+  dashboard:
+    expandable: false # I can't figure out how to make Mosaic vgplots resizable
+echo: false
+resources: 
+  - flights-10m.parquet
+# This is a pretty direct port of 
+#   https://observablehq.com/@uwdata/mosaic-cross-filter-flights-10m
+---
+
+```{ojs}
+//| output: false
+// helper method to generate a binned plot filtered by brush
+// a plot contains a rectY mark for a histogram, as well as
+// an intervalX interactor to populate the brush selection
+mutable plots = Object.create(null);
+makePlot = (opts) => {
+    if (mutable plots[opts.column] === undefined) {
+        const result = new vg.Plot();
+        vg.rectY(
+            vg.from("flights10m", { filterBy: brush }), // data set and filter selection
+            { x: vg.bin(opts.column), y: vg.count(), fill: "steelblue", inset: 0.5 }
+        )(result);
+        vg.intervalX({ as: opts.brush })(result);
+        vg.xDomain(vg.Fixed)(result);
+        vg.marginLeft(75)(result);
+        vg.width(opts.width || 600)(result);
+        vg.height(opts.height || 200)(result);
+        result.marks.forEach(mark => vg.coordinator().connect(mark));
+        mutable plots[opts.column] = result;
+        return result.element;
+    } else {
+        // avoid recreating plots because of brush state issues.
+        const result = mutable plots[opts.column];
+        return result.element;
+    }
+}
+vg = {
+  const vg = await import('https://cdn.jsdelivr.net/npm/@uwdata/vgplot@0.4.0/+esm');
+  const wasm = await vg.wasmConnector();
+  vg.coordinator().databaseConnector(wasm);
+  return vg;
+}
+brush = {
+  // load flights data from external parquet file
+  await vg.coordinator().exec(`CREATE TABLE IF NOT EXISTS flights10m AS
+    SELECT
+      GREATEST(-60, LEAST(ARR_DELAY, 180))::DOUBLE AS delay,
+      DISTANCE AS distance,
+      DEP_TIME AS time
+    FROM 'https://cscheid.github.io/quarto-dashboard-ojs-examples/flights-10m.parquet'`);
+
+  // create a selection with crossfilter resolution
+  return vg.Selection.crossfilter();
+}
+```
+
+```{ojs}
+//| label: time
+//| title: Arrival Time
+makePlot({ brush: brush, column: "time", width: cards.time.width, height: cards.time.height })
+```
+
+## (Row)
+
+### (Col)
+
+```{ojs}
+//| label: delay
+//| title: Delay
+makePlot({ 
+    brush: brush, 
+    column: "delay", 
+    width: cards.delay.width, 
+    height: cards.delay.height
+})
+```
+
+### (Col)
+
+```{ojs}
+//| label: distance
+//| title: Flight Distance
+makePlot({ brush: brush, column: "distance", width: cards.distance.width, height: cards.distance.height })
+```
