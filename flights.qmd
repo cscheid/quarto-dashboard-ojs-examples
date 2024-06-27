@@ -4,6 +4,8 @@ format:
   dashboard:
     expandable: false # I can't figure out how to make Mosaic vgplots resizable
 echo: false
+resources: 
+  - flights-10m.parquet
 # This is a pretty direct port of 
 #   https://observablehq.com/@uwdata/mosaic-cross-filter-flights-10m
 ---
@@ -48,7 +50,7 @@ brush = {
       GREATEST(-60, LEAST(ARR_DELAY, 180))::DOUBLE AS delay,
       DISTANCE AS distance,
       DEP_TIME AS time
-    FROM 'https://uwdata.github.io/mosaic-datasets/data/flights-10m.parquet'`);
+    FROM 'https://cscheid.github.io/quarto-dashboard-ojs-examples/flights-10m.parquet'`);
 
   // create a selection with crossfilter resolution
   return vg.Selection.crossfilter();
